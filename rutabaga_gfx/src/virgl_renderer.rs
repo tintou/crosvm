@@ -264,19 +264,28 @@ impl VirglRenderer {
             };
             ret_to_res(ret)?;
 
-            /* Only support dma-bufs until someone wants opaque fds too. */
-            if fd_type != VIRGL_RENDERER_BLOB_FD_TYPE_DMABUF {
-                // Safe because the FD was just returned by a successful virglrenderer
-                // call so it must be valid and owned by us.
-                unsafe { close(fd) };
-                return Err(RutabagaError::Unsupported);
+            match fd_type {
+                VIRGL_RENDERER_BLOB_FD_TYPE_DMABUF => {
+                    let dmabuf = unsafe { SafeDescriptor::from_raw_descriptor(fd) };
+                    Ok(Arc::new(RutabagaHandle {
+                        os_handle: dmabuf,
+                        handle_type: RUTABAGA_MEM_HANDLE_TYPE_DMABUF,
+                    }))
+                }
+                VIRGL_RENDERER_BLOB_FD_TYPE_OPAQUE => {
+                    let os_handle = unsafe { SafeDescriptor::from_raw_descriptor(fd) };
+                    Ok(Arc::new(RutabagaHandle {
+                        os_handle,
+                        handle_type: RUTABAGA_MEM_HANDLE_TYPE_OPAQUE_FD,
+                    }))
+                }
+                _ => {
+                    // Safe because the FD was just returned by a successful virglrenderer
+                    // call so it must be valid and owned by us.
+                    unsafe { close(fd) };
+                    Err(RutabagaError::Unsupported)
+                }
             }
-
-            let dmabuf = unsafe { SafeDescriptor::from_raw_descriptor(fd) };
-            Ok(Arc::new(RutabagaHandle {
-                os_handle: dmabuf,
-                handle_type: RUTABAGA_MEM_HANDLE_TYPE_DMABUF,
-            }))
         }
         #[cfg(not(feature = "virgl_renderer_next"))]
         Err(RutabagaError::Unsupported)
