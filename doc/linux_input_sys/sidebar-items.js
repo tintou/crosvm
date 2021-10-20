@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["input_event",""],["virtio_input_event",""]],"trait":[["InputEventDecoder","Allows a raw input event of the implementor’s type to be decoded into a virtio_input_event."]]});

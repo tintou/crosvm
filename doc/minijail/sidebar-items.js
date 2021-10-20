@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Error",""]],"struct":[["Minijail","Configuration to jail a process based on wrapping libminijail."]],"type":[["Result",""]]});
