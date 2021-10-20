@@ -338,17 +338,15 @@
 <span id="338">338</span>
 <span id="339">339</span>
 <span id="340">340</span>
-<span id="341">341</span>
-<span id="342">342</span>
-<span id="343">343</span>
 </pre><pre class="rust">
 <span class="comment">// Copyright 2021 The Chromium OS Authors. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a BSD-style license that can be</span>
 <span class="comment">// found in the LICENSE file.</span>
 
+<span class="kw">use</span> <span class="ident">std::collections::VecDeque</span>;
 <span class="kw">use</span> <span class="ident">std::io</span>::{<span class="self">self</span>, <span class="ident">stdin</span>};
+<span class="kw">use</span> <span class="ident">std::ops::DerefMut</span>;
 <span class="kw">use</span> <span class="ident">std::path::PathBuf</span>;
-<span class="kw">use</span> <span class="ident">std::sync::mpsc::Receiver</span>;
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="ident">anyhow</span>::{<span class="ident">anyhow</span>, <span class="ident">bail</span>, <span class="ident">Context</span>};
@@ -396,7 +394,7 @@
     <span class="ident">mem</span>: <span class="ident">GuestMemory</span>,
     <span class="ident">call_evt</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">CallEvent</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">kick_evt</span>: <span class="ident">EventAsync</span>,
-    <span class="ident">in_channel</span>: <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">in_buffer</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">VecDeque</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">in_avail_evt</span>: <span class="ident">EventAsync</span>,
 ) {
     <span class="kw">loop</span> {
@@ -404,17 +402,13 @@
             <span class="macro">error!</span>(<span class="string">&quot;Failed reading in_avail_evt: {}&quot;</span>, <span class="ident">e</span>);
             <span class="kw">break</span>;
         }
-        <span class="kw">match</span> <span class="ident">handle_input</span>(<span class="kw-2">&amp;</span><span class="ident">mem</span>, <span class="kw-2">&amp;</span><span class="ident">call_evt</span>, <span class="kw-2">&amp;</span><span class="ident">in_channel</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">queue</span>) {
+        <span class="kw">match</span> <span class="ident">handle_input</span>(<span class="kw-2">&amp;</span><span class="ident">mem</span>, <span class="kw-2">&amp;</span><span class="ident">call_evt</span>, <span class="ident">in_buffer</span>.<span class="ident">lock</span>().<span class="ident">deref_mut</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">queue</span>) {
             <span class="prelude-val">Ok</span>(()) <span class="op">=</span><span class="op">&gt;</span> {}
             <span class="prelude-val">Err</span>(<span class="ident">ConsoleError::RxDescriptorsExhausted</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">kick_evt</span>.<span class="ident">next_val</span>().<span class="kw">await</span> {
                     <span class="macro">error!</span>(<span class="string">&quot;Failed to read kick event for rx queue: {}&quot;</span>, <span class="ident">e</span>);
                     <span class="kw">break</span>;
                 }
-            }
-            <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="macro">error!</span>(<span class="string">&quot;Failed to process rx queue: {}&quot;</span>, <span class="ident">e</span>);
-                <span class="kw">break</span>;
             }
         }
     }
@@ -546,7 +540,7 @@
                     .<span class="ident">input</span>
                     .<span class="ident">take</span>()
                     .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="macro">anyhow!</span>(<span class="string">&quot;input source unavailable&quot;</span>))<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">in_channel</span> <span class="op">=</span> <span class="ident">spawn_input_thread</span>(<span class="ident">input_unpacked</span>, <span class="kw-2">&amp;</span><span class="ident">in_avail_evt</span>)
+                <span class="kw">let</span> <span class="ident">in_buffer</span> <span class="op">=</span> <span class="ident">spawn_input_thread</span>(<span class="ident">input_unpacked</span>, <span class="kw-2">&amp;</span><span class="ident">in_avail_evt</span>)
                     .<span class="ident">take</span>()
                     .<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="macro">anyhow!</span>(<span class="string">&quot;input channel unavailable&quot;</span>))<span class="question-mark">?</span>;
 
@@ -560,7 +554,7 @@
                         <span class="ident">mem</span>,
                         <span class="ident">call_evt</span>,
                         <span class="ident">kick_evt</span>,
-                        <span class="ident">in_channel</span>,
+                        <span class="ident">in_buffer</span>,
                         <span class="ident">in_avail_async_evt</span>,
                     ),
                     <span class="ident">registration</span>,
