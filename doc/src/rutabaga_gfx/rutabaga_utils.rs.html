@@ -567,6 +567,10 @@
 <span id="567">567</span>
 <span id="568">568</span>
 <span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
 </pre><pre class="rust">
 <span class="comment">// Copyright 2020 The Chromium OS Authors. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a BSD-style license that can be</span>
@@ -611,6 +615,7 @@
 <span class="doccomment">/// can&#39;t work with gfxstream/virglrenderer without this.</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">RUTABAGA_PIPE_TEXTURE_2D</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">RUTABAGA_PIPE_BIND_RENDER_TARGET</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ResourceCreate3D</span> {
     <span class="kw">pub</span> <span class="ident">target</span>: <span class="ident">u32</span>,
@@ -633,6 +638,7 @@
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">RUTABAGA_BLOB_FLAG_USE_MAPPABLE</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0x0001</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">RUTABAGA_BLOB_FLAG_USE_SHAREABLE</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0x0002</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">RUTABAGA_BLOB_FLAG_USE_CROSS_DEVICE</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0x0004</span>;
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ResourceCreateBlob</span> {
     <span class="kw">pub</span> <span class="ident">blob_mem</span>: <span class="ident">u32</span>,
@@ -667,6 +673,7 @@
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">RUTABAGA_FLAG_INFO_RING_IDX</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">1</span>;
 
 <span class="doccomment">/// Convenience struct for Rutabaga fences</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RutabagaFence</span> {
     <span class="kw">pub</span> <span class="ident">flags</span>: <span class="ident">u32</span>,
@@ -1008,7 +1015,8 @@
 }
 
 <span class="doccomment">/// Transfers {to, from} 1D buffers, 2D textures, 3D textures, and cubemaps.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Transfer3D</span> {
     <span class="kw">pub</span> <span class="ident">x</span>: <span class="ident">u32</span>,
     <span class="kw">pub</span> <span class="ident">y</span>: <span class="ident">u32</span>,
