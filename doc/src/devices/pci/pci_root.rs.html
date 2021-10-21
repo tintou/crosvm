@@ -368,7 +368,7 @@
 <span class="kw">use</span> <span class="ident">std::collections::BTreeMap</span>;
 <span class="kw">use</span> <span class="ident">std::convert::TryInto</span>;
 <span class="kw">use</span> <span class="ident">std::fmt</span>::{<span class="self">self</span>, <span class="ident">Display</span>};
-<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
+<span class="kw">use</span> <span class="ident">std::sync</span>::{<span class="ident">Arc</span>, <span class="ident">Weak</span>};
 
 <span class="kw">use</span> <span class="ident">base::RawDescriptor</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
@@ -497,9 +497,9 @@
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span> <span class="comment">// TODO(b/174705596): remove once mmio_bus and io_bus are used</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PciRoot</span> {
     <span class="doccomment">/// Memory (MMIO) bus.</span>
-    <span class="ident">mmio_bus</span>: <span class="ident">Bus</span>,
+    <span class="ident">mmio_bus</span>: <span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">Bus</span><span class="op">&gt;</span>,
     <span class="doccomment">/// IO bus (x86 only - for non-x86 platforms, this is just an empty Bus).</span>
-    <span class="ident">io_bus</span>: <span class="ident">Bus</span>,
+    <span class="ident">io_bus</span>: <span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">Bus</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Bus configuration for the root device.</span>
     <span class="ident">root_configuration</span>: <span class="ident">PciRootConfiguration</span>,
     <span class="doccomment">/// Devices attached to this bridge.</span>
@@ -511,7 +511,7 @@
 
 <span class="kw">impl</span> <span class="ident">PciRoot</span> {
     <span class="doccomment">/// Create an empty PCI root bus.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">mmio_bus</span>: <span class="ident">Bus</span>, <span class="ident">io_bus</span>: <span class="ident">Bus</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">mmio_bus</span>: <span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">Bus</span><span class="op">&gt;</span>, <span class="ident">io_bus</span>: <span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">Bus</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">PciRoot</span> {
             <span class="ident">mmio_bus</span>,
             <span class="ident">io_bus</span>,

@@ -1668,8 +1668,8 @@
         <span class="kw">let</span> <span class="ident">tss_addr</span> <span class="op">=</span> <span class="ident">GuestAddress</span>(<span class="ident">TSS_ADDR</span>);
         <span class="ident">vm</span>.<span class="ident">set_tss_addr</span>(<span class="ident">tss_addr</span>).<span class="ident">map_err</span>(<span class="ident">Error::SetTssAddr</span>)<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mmio_bus</span> <span class="op">=</span> <span class="ident">devices::Bus::new</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">io_bus</span> <span class="op">=</span> <span class="ident">devices::Bus::new</span>();
+        <span class="kw">let</span> <span class="ident">mmio_bus</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">devices::Bus::new</span>());
+        <span class="kw">let</span> <span class="ident">io_bus</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">devices::Bus::new</span>());
 
         <span class="kw">let</span> (<span class="ident">pci_devices</span>, <span class="ident">_others</span>): (<span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>) <span class="op">=</span> <span class="ident">devs</span>
             .<span class="ident">into_iter</span>()
@@ -1683,8 +1683,8 @@
         <span class="kw">let</span> (<span class="ident">pci</span>, <span class="ident">pci_irqs</span>, <span class="ident">pid_debug_label_map</span>) <span class="op">=</span> <span class="ident">arch::generate_pci_root</span>(
             <span class="ident">pci_devices</span>,
             <span class="ident">irq_chip</span>.<span class="ident">as_irq_chip_mut</span>(),
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">mmio_bus</span>,
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">io_bus</span>,
+            <span class="ident">mmio_bus</span>.<span class="ident">clone</span>(),
+            <span class="ident">io_bus</span>.<span class="ident">clone</span>(),
             <span class="ident">system_allocator</span>,
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">vm</span>,
             <span class="number">4</span>, <span class="comment">// Share the four pin interrupts (INTx#)</span>
@@ -1698,7 +1698,7 @@
 
         <span class="kw">if</span> <span class="op">!</span><span class="ident">components</span>.<span class="ident">no_legacy</span> {
             <span class="self">Self</span><span class="ident">::setup_legacy_devices</span>(
-                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">io_bus</span>,
+                <span class="kw-2">&amp;</span><span class="ident">io_bus</span>,
                 <span class="ident">irq_chip</span>.<span class="ident">pit_uses_speaker_port</span>(),
                 <span class="ident">exit_evt</span>.<span class="ident">try_clone</span>().<span class="ident">map_err</span>(<span class="ident">Error::CloneEvent</span>)<span class="question-mark">?</span>,
                 <span class="ident">components</span>.<span class="ident">memory_size</span>,
@@ -1707,7 +1707,7 @@
         <span class="self">Self</span><span class="ident">::setup_serial_devices</span>(
             <span class="ident">components</span>.<span class="ident">protected_vm</span>,
             <span class="ident">irq_chip</span>.<span class="ident">as_irq_chip_mut</span>(),
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">io_bus</span>,
+            <span class="kw-2">&amp;</span><span class="ident">io_bus</span>,
             <span class="ident">serial_parameters</span>,
             <span class="ident">serial_jail</span>,
         )<span class="question-mark">?</span>;
@@ -1716,14 +1716,14 @@
 
         <span class="kw">let</span> (<span class="ident">acpi_dev_resource</span>, <span class="ident">bat_control</span>) <span class="op">=</span> <span class="self">Self</span><span class="ident">::setup_acpi_devices</span>(
             <span class="kw-2">&amp;</span><span class="ident">mem</span>,
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">io_bus</span>,
+            <span class="kw-2">&amp;</span><span class="ident">io_bus</span>,
             <span class="ident">system_allocator</span>,
             <span class="ident">suspend_evt</span>.<span class="ident">try_clone</span>().<span class="ident">map_err</span>(<span class="ident">Error::CloneEvent</span>)<span class="question-mark">?</span>,
             <span class="ident">exit_evt</span>.<span class="ident">try_clone</span>().<span class="ident">map_err</span>(<span class="ident">Error::CloneEvent</span>)<span class="question-mark">?</span>,
             <span class="ident">components</span>.<span class="ident">acpi_sdts</span>,
             <span class="ident">irq_chip</span>.<span class="ident">as_irq_chip_mut</span>(),
             <span class="ident">battery</span>,
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">mmio_bus</span>,
+            <span class="kw-2">&amp;</span><span class="ident">mmio_bus</span>,
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">resume_notify_devices</span>,
         )<span class="question-mark">?</span>;
 
@@ -1737,7 +1737,7 @@
         }
 
         <span class="ident">irq_chip</span>
-            .<span class="ident">finalize_devices</span>(<span class="ident">system_allocator</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">io_bus</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">mmio_bus</span>)
+            .<span class="ident">finalize_devices</span>(<span class="ident">system_allocator</span>, <span class="kw-2">&amp;</span><span class="ident">io_bus</span>, <span class="kw-2">&amp;</span><span class="ident">mmio_bus</span>)
             .<span class="ident">map_err</span>(<span class="ident">Error::RegisterIrqfd</span>)<span class="question-mark">?</span>;
 
         <span class="comment">// All of these bios generated tables are set manually for the benefit of the kernel boot</span>
@@ -2262,7 +2262,7 @@
     <span class="doccomment">/// * - `exit_evt` - the event object which should receive exit events</span>
     <span class="doccomment">/// * - `mem_size` - the size in bytes of physical ram for the guest</span>
     <span class="kw">fn</span> <span class="ident">setup_legacy_devices</span>(
-        <span class="ident">io_bus</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">devices::Bus</span>,
+        <span class="ident">io_bus</span>: <span class="kw-2">&amp;</span><span class="ident">devices::Bus</span>,
         <span class="ident">pit_uses_speaker_port</span>: <span class="ident">bool</span>,
         <span class="ident">exit_evt</span>: <span class="ident">Event</span>,
         <span class="ident">mem_size</span>: <span class="ident">u64</span>,
@@ -2328,14 +2328,14 @@
     <span class="doccomment">/// * - `mmio_bus` the MMIO bus to add the devices to</span>
     <span class="kw">fn</span> <span class="ident">setup_acpi_devices</span>(
         <span class="ident">mem</span>: <span class="kw-2">&amp;</span><span class="ident">GuestMemory</span>,
-        <span class="ident">io_bus</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">devices::Bus</span>,
+        <span class="ident">io_bus</span>: <span class="kw-2">&amp;</span><span class="ident">devices::Bus</span>,
         <span class="ident">resources</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SystemAllocator</span>,
         <span class="ident">suspend_evt</span>: <span class="ident">Event</span>,
         <span class="ident">exit_evt</span>: <span class="ident">Event</span>,
         <span class="ident">sdts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SDT</span><span class="op">&gt;</span>,
         <span class="ident">irq_chip</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">IrqChip</span>,
         <span class="ident">battery</span>: (<span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BatteryType</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Minijail</span><span class="op">&gt;</span>),
-        <span class="ident">mmio_bus</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">devices::Bus</span>,
+        <span class="ident">mmio_bus</span>: <span class="kw-2">&amp;</span><span class="ident">devices::Bus</span>,
         <span class="ident">resume_notify_devices</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">BusResumeDevice</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">acpi::ACPIDevResource</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BatControl</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
         <span class="comment">// The AML data for the acpi devices</span>
@@ -2446,7 +2446,7 @@
     <span class="kw">fn</span> <span class="ident">setup_serial_devices</span>(
         <span class="ident">protected_vm</span>: <span class="ident">ProtectionType</span>,
         <span class="ident">irq_chip</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">IrqChip</span>,
-        <span class="ident">io_bus</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">devices::Bus</span>,
+        <span class="ident">io_bus</span>: <span class="kw-2">&amp;</span><span class="ident">devices::Bus</span>,
         <span class="ident">serial_parameters</span>: <span class="kw-2">&amp;</span><span class="ident">BTreeMap</span><span class="op">&lt;</span>(<span class="ident">SerialHardware</span>, <span class="ident">u8</span>), <span class="ident">SerialParameters</span><span class="op">&gt;</span>,
         <span class="ident">serial_jail</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Minijail</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
