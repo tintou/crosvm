@@ -780,6 +780,9 @@
 <span id="780">780</span>
 <span id="781">781</span>
 <span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
 </pre><pre class="rust">
 <span class="comment">// Copyright 2018 The Chromium OS Authors. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a BSD-style license that can be</span>
@@ -881,6 +884,7 @@
     <span class="kw">pub</span> <span class="ident">gdb</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">Tube</span>)<span class="op">&gt;</span>, <span class="comment">// port and control tube.</span>
     <span class="kw">pub</span> <span class="ident">dmi_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">no_legacy</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">host_cpu_topology</span>: <span class="ident">bool</span>,
 }
 
 <span class="doccomment">/// Holds the elements needed to run a Linux VM. Created by `build_vm`.</span>
@@ -965,6 +969,7 @@
         <span class="ident">ramoops_region</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">pstore::RamoopsRegion</span><span class="op">&gt;</span>,
         <span class="ident">devices</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">BusDeviceObj</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Minijail</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
         <span class="ident">irq_chip</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">IrqChipArch</span>,
+        <span class="ident">kvm_vcpu_ids</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">RunnableLinuxVm</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">Vcpu</span><span class="op">&gt;</span>, <span class="self">Self</span><span class="ident">::Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">V</span>: <span class="ident">VmArch</span>,
@@ -990,6 +995,7 @@
         <span class="ident">num_cpus</span>: <span class="ident">usize</span>,
         <span class="ident">has_bios</span>: <span class="ident">bool</span>,
         <span class="ident">no_smt</span>: <span class="ident">bool</span>,
+        <span class="ident">host_cpu_topology</span>: <span class="ident">bool</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="self">Self</span><span class="ident">::Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Configures and add a pci device into vm</span>

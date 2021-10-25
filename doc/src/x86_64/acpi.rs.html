@@ -297,11 +297,145 @@
 <span id="297">297</span>
 <span id="298">298</span>
 <span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
 </pre><pre class="rust">
 <span class="comment">// Copyright 2020 The Chromium OS Authors. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a BSD-style license that can be</span>
 <span class="comment">// found in the LICENSE file.</span>
+
+<span class="kw">use</span> <span class="ident">std::arch::x86_64</span>::{<span class="ident">CpuidResult</span>, <span class="ident">__cpuid</span>, <span class="ident">__cpuid_count</span>};
+<span class="kw">use</span> <span class="ident">std::collections::BTreeMap</span>;
+
 <span class="kw">use</span> <span class="ident">acpi_tables</span>::{<span class="ident">facs::FACS</span>, <span class="ident">rsdp::RSDP</span>, <span class="ident">sdt::SDT</span>};
+<span class="kw">use</span> <span class="ident">arch::VcpuAffinity</span>;
 <span class="kw">use</span> <span class="ident">base::error</span>;
 <span class="kw">use</span> <span class="ident">data_model::DataInit</span>;
 <span class="kw">use</span> <span class="ident">vm_memory</span>::{<span class="ident">GuestAddress</span>, <span class="ident">GuestMemory</span>};
@@ -340,6 +474,20 @@
 <span class="comment">// Safe as IOAPIC structure only contains raw data</span>
 <span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">DataInit</span> <span class="kw">for</span> <span class="ident">IOAPIC</span> {}
 
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Default</span>)]</span>
+<span class="kw">struct</span> <span class="ident">Localx2APIC</span> {
+    <span class="ident">_type</span>: <span class="ident">u8</span>,
+    <span class="ident">_length</span>: <span class="ident">u8</span>,
+    <span class="ident">_reserved</span>: <span class="ident">u16</span>,
+    <span class="ident">_x2apic_id</span>: <span class="ident">u32</span>,
+    <span class="ident">_flags</span>: <span class="ident">u32</span>,
+    <span class="ident">_processor_id</span>: <span class="ident">u32</span>,
+}
+
+<span class="comment">// Safe as LocalAPIC structure only contains raw data</span>
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">DataInit</span> <span class="kw">for</span> <span class="ident">Localx2APIC</span> {}
+
 <span class="kw">const</span> <span class="ident">OEM_REVISION</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">1</span>;
 <span class="comment">//DSDT</span>
 <span class="kw">const</span> <span class="ident">DSDT_REVISION</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="number">6</span>;
@@ -376,10 +524,15 @@
 <span class="kw">const</span> <span class="ident">MADT_TYPE_LOCAL_APIC</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="number">0</span>;
 <span class="kw">const</span> <span class="ident">MADT_TYPE_IO_APIC</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="number">1</span>;
 <span class="kw">const</span> <span class="ident">MADT_TYPE_INTERRUPT_SOURCE_OVERRIDE</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="number">2</span>;
+<span class="kw">const</span> <span class="ident">MADT_TYPE_LOCAL_X2APIC</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="number">9</span>;
 <span class="comment">// MADT flags</span>
 <span class="kw">const</span> <span class="ident">MADT_ENABLED</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">1</span>;
+<span class="comment">// MADT compatibility</span>
+<span class="kw">const</span> <span class="ident">MADT_MIN_LOCAL_APIC_ID</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">255</span>;
 <span class="comment">// XSDT</span>
 <span class="kw">const</span> <span class="ident">XSDT_REVISION</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="number">1</span>;
+
+<span class="kw">const</span> <span class="ident">CPUID_LEAF0_EBX_CPUID_SHIFT</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">24</span>; <span class="comment">// Offset of initial apic id.</span>
 
 <span class="kw">fn</span> <span class="ident">create_dsdt_table</span>(<span class="ident">amls</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SDT</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dsdt</span> <span class="op">=</span> <span class="ident">SDT::new</span>(
@@ -449,6 +602,97 @@
     }
 }
 
+<span class="kw">fn</span> <span class="ident">sync_acpi_id_from_cpuid</span>(
+    <span class="ident">madt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SDT</span>,
+    <span class="ident">cpus</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">apic_ids</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">base::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">cpu_set</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">base::get_cpu_affinity</span>() {
+        <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="macro">error!</span>(<span class="string">&quot;Failed to get CPU affinity: {} when create MADT&quot;</span>, <span class="ident">e</span>);
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>);
+        }
+        <span class="prelude-val">Ok</span>(<span class="ident">c</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">c</span>,
+    };
+
+    <span class="kw">for</span> (<span class="ident">vcpu</span>, <span class="ident">pcpu</span>) <span class="kw">in</span> <span class="ident">cpus</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">has_leafb</span> <span class="op">=</span> <span class="bool-val">false</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">get_apic_id</span> <span class="op">=</span> <span class="bool-val">false</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">apic_id</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="number">0</span>;
+
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">base::set_cpu_affinity</span>(<span class="ident">pcpu</span>) {
+            <span class="macro">error!</span>(<span class="string">&quot;Failed to set CPU affinity: {} when create MADT&quot;</span>, <span class="ident">e</span>);
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>);
+        }
+
+        <span class="comment">// Safe because we pass 0 and 0 for this call and the host supports the</span>
+        <span class="comment">// `cpuid` instruction</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cpuid_entry</span>: <span class="ident">CpuidResult</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">__cpuid_count</span>(<span class="number">0</span>, <span class="number">0</span>) };
+
+        <span class="kw">if</span> <span class="ident">cpuid_entry</span>.<span class="ident">eax</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0xB</span> {
+            <span class="comment">// Safe because we pass 0xB and 0 for this call and the host supports the</span>
+            <span class="comment">// `cpuid` instruction</span>
+            <span class="ident">cpuid_entry</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">__cpuid_count</span>(<span class="number">0xB</span>, <span class="number">0</span>) };
+
+            <span class="kw">if</span> <span class="ident">cpuid_entry</span>.<span class="ident">ebx</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
+                <span class="comment">// MADT compatibility: (ACPI Spec v6.4) On some legacy OSes,</span>
+                <span class="comment">// Logical processors with APIC ID values less than 255 (whether in</span>
+                <span class="comment">// XAPIC or X2APIC mode) must use the Processor Local APIC structure.</span>
+                <span class="kw">if</span> <span class="ident">cpuid_entry</span>.<span class="ident">edx</span> <span class="op">&lt;</span> <span class="ident">MADT_MIN_LOCAL_APIC_ID</span> {
+                    <span class="ident">apic_id</span> <span class="op">=</span> <span class="ident">cpuid_entry</span>.<span class="ident">edx</span> <span class="kw">as</span> <span class="ident">u8</span>;
+                    <span class="ident">get_apic_id</span> <span class="op">=</span> <span class="bool-val">true</span>;
+                } <span class="kw">else</span> {
+                    <span class="comment">// (ACPI Spec v6.4) When using the X2APIC, logical processors are</span>
+                    <span class="comment">// required to have a processor device object in the DSDT and must</span>
+                    <span class="comment">// convey the processor’s APIC information to OSPM using the Processor</span>
+                    <span class="comment">// Local X2APIC structure.</span>
+                    <span class="comment">// Now vCPUs use the DSDT passthrougt from host and the same APIC ID as</span>
+                    <span class="comment">// the physical CPUs. Both of them should meet ACPI specifications on</span>
+                    <span class="comment">// the host.</span>
+                    <span class="ident">has_leafb</span> <span class="op">=</span> <span class="bool-val">true</span>;
+
+                    <span class="kw">let</span> <span class="ident">x2apic</span> <span class="op">=</span> <span class="ident">Localx2APIC</span> {
+                        <span class="ident">_type</span>: <span class="ident">MADT_TYPE_LOCAL_X2APIC</span>,
+                        <span class="ident">_length</span>: <span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">Localx2APIC</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="ident">u8</span>,
+                        <span class="ident">_x2apic_id</span>: <span class="ident">cpuid_entry</span>.<span class="ident">edx</span>,
+                        <span class="ident">_flags</span>: <span class="ident">MADT_ENABLED</span>,
+                        <span class="ident">_processor_id</span>: (<span class="ident">vcpu</span> <span class="op">+</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">u32</span>,
+                        ..<span class="ident">Default::default</span>()
+                    };
+                    <span class="ident">madt</span>.<span class="ident">append</span>(<span class="ident">x2apic</span>);
+                    <span class="ident">apic_ids</span>.<span class="ident">push</span>(<span class="ident">cpuid_entry</span>.<span class="ident">edx</span> <span class="kw">as</span> <span class="ident">usize</span>);
+                }
+            }
+        }
+
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">has_leafb</span> {
+            <span class="kw">if</span> <span class="op">!</span><span class="ident">get_apic_id</span> {
+                <span class="comment">// Safe because we pass 1 for this call and the host supports the</span>
+                <span class="comment">// `cpuid` instruction</span>
+                <span class="ident">cpuid_entry</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">__cpuid</span>(<span class="number">1</span>) };
+                <span class="ident">apic_id</span> <span class="op">=</span> (<span class="ident">cpuid_entry</span>.<span class="ident">ebx</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">CPUID_LEAF0_EBX_CPUID_SHIFT</span> <span class="op">&amp;</span> <span class="number">0xff</span>) <span class="kw">as</span> <span class="ident">u8</span>;
+            }
+
+            <span class="kw">let</span> <span class="ident">apic</span> <span class="op">=</span> <span class="ident">LocalAPIC</span> {
+                <span class="ident">_type</span>: <span class="ident">MADT_TYPE_LOCAL_APIC</span>,
+                <span class="ident">_length</span>: <span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">LocalAPIC</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="ident">u8</span>,
+                <span class="ident">_processor_id</span>: <span class="ident">vcpu</span> <span class="kw">as</span> <span class="ident">u8</span>,
+                <span class="ident">_apic_id</span>: <span class="ident">apic_id</span>,
+                <span class="ident">_flags</span>: <span class="ident">MADT_ENABLED</span>,
+            };
+            <span class="ident">madt</span>.<span class="ident">append</span>(<span class="ident">apic</span>);
+            <span class="ident">apic_ids</span>.<span class="ident">push</span>(<span class="ident">apic_id</span> <span class="kw">as</span> <span class="ident">usize</span>);
+        }
+    }
+
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">base::set_cpu_affinity</span>(<span class="ident">cpu_set</span>) {
+        <span class="macro">error!</span>(<span class="string">&quot;Failed to reset CPU affinity: {} when create MADT&quot;</span>, <span class="ident">e</span>);
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>);
+    }
+
+    <span class="prelude-val">Ok</span>(())
+}
+
 <span class="doccomment">/// Create ACPI tables and return the RSDP.</span>
 <span class="doccomment">/// The basic tables DSDT/FACP/MADT/XSDT are constructed in this function.</span>
 <span class="doccomment">/// # Arguments</span>
@@ -458,12 +702,18 @@
 <span class="doccomment">/// * `sci_irq` - Used to fill the FACP SCI_INTERRUPT field, which</span>
 <span class="doccomment">///               is going to be used by the ACPI drivers to register</span>
 <span class="doccomment">///               sci handler.</span>
-<span class="doccomment">/// * `acpi_dev_resource` - resouces needed by the ACPI devices for creating tables</span>
+<span class="doccomment">/// * `acpi_dev_resource` - resouces needed by the ACPI devices for creating tables.</span>
+<span class="doccomment">/// * `host_cpus` - The CPU affinity per CPU used to get corresponding CPUs&#39; apic</span>
+<span class="doccomment">///                 id and set these apic id in MADT if `--host-cpu-topology`</span>
+<span class="doccomment">///                 option is set.</span>
+<span class="doccomment">/// * `apic_ids` - The apic id for vCPU will be sent to KVM by KVM_CREATE_VCPU ioctl.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_acpi_tables</span>(
     <span class="ident">guest_mem</span>: <span class="kw-2">&amp;</span><span class="ident">GuestMemory</span>,
     <span class="ident">num_cpus</span>: <span class="ident">u8</span>,
     <span class="ident">sci_irq</span>: <span class="ident">u32</span>,
     <span class="ident">acpi_dev_resource</span>: <span class="ident">ACPIDevResource</span>,
+    <span class="ident">host_cpus</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">VcpuAffinity</span><span class="op">&gt;</span>,
+    <span class="ident">apic_ids</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">GuestAddress</span><span class="op">&gt;</span> {
     <span class="comment">// RSDP is at the HI RSDP WINDOW</span>
     <span class="kw">let</span> <span class="ident">rsdp_offset</span> <span class="op">=</span> <span class="ident">GuestAddress</span>(<span class="kw">super</span><span class="ident">::ACPI_HI_RSDP_WINDOW_BASE</span>);
@@ -538,15 +788,23 @@
         <span class="kw">super</span><span class="ident">::mptable::APIC_DEFAULT_PHYS_BASE</span> <span class="kw">as</span> <span class="ident">u32</span>,
     );
 
-    <span class="kw">for</span> <span class="ident">cpu</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">num_cpus</span> {
-        <span class="kw">let</span> <span class="ident">lapic</span> <span class="op">=</span> <span class="ident">LocalAPIC</span> {
-            <span class="ident">_type</span>: <span class="ident">MADT_TYPE_LOCAL_APIC</span>,
-            <span class="ident">_length</span>: <span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">LocalAPIC</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="ident">u8</span>,
-            <span class="ident">_processor_id</span>: <span class="ident">cpu</span>,
-            <span class="ident">_apic_id</span>: <span class="ident">cpu</span>,
-            <span class="ident">_flags</span>: <span class="ident">MADT_ENABLED</span>,
-        };
-        <span class="ident">madt</span>.<span class="ident">append</span>(<span class="ident">lapic</span>);
+    <span class="kw">match</span> <span class="ident">host_cpus</span> {
+        <span class="prelude-val">Some</span>(<span class="ident">VcpuAffinity::PerVcpu</span>(<span class="ident">cpus</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">sync_acpi_id_from_cpuid</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">madt</span>, <span class="ident">cpus</span>, <span class="ident">apic_ids</span>).<span class="ident">ok</span>()<span class="question-mark">?</span>;
+        }
+        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">for</span> <span class="ident">cpu</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">num_cpus</span> {
+                <span class="kw">let</span> <span class="ident">apic</span> <span class="op">=</span> <span class="ident">LocalAPIC</span> {
+                    <span class="ident">_type</span>: <span class="ident">MADT_TYPE_LOCAL_APIC</span>,
+                    <span class="ident">_length</span>: <span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">LocalAPIC</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="ident">u8</span>,
+                    <span class="ident">_processor_id</span>: <span class="ident">cpu</span>,
+                    <span class="ident">_apic_id</span>: <span class="ident">cpu</span>,
+                    <span class="ident">_flags</span>: <span class="ident">MADT_ENABLED</span>,
+                };
+                <span class="ident">madt</span>.<span class="ident">append</span>(<span class="ident">apic</span>);
+                <span class="ident">apic_ids</span>.<span class="ident">push</span>(<span class="ident">cpu</span> <span class="kw">as</span> <span class="ident">usize</span>);
+            }
+        }
     }
 
     <span class="ident">madt</span>.<span class="ident">append</span>(<span class="ident">IOAPIC</span> {

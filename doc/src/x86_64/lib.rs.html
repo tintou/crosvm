@@ -1273,6 +1273,32 @@
 <span id="1273">1273</span>
 <span id="1274">1274</span>
 <span id="1275">1275</span>
+<span id="1276">1276</span>
+<span id="1277">1277</span>
+<span id="1278">1278</span>
+<span id="1279">1279</span>
+<span id="1280">1280</span>
+<span id="1281">1281</span>
+<span id="1282">1282</span>
+<span id="1283">1283</span>
+<span id="1284">1284</span>
+<span id="1285">1285</span>
+<span id="1286">1286</span>
+<span id="1287">1287</span>
+<span id="1288">1288</span>
+<span id="1289">1289</span>
+<span id="1290">1290</span>
+<span id="1291">1291</span>
+<span id="1292">1292</span>
+<span id="1293">1293</span>
+<span id="1294">1294</span>
+<span id="1295">1295</span>
+<span id="1296">1296</span>
+<span id="1297">1297</span>
+<span id="1298">1298</span>
+<span id="1299">1299</span>
+<span id="1300">1300</span>
+<span id="1301">1301</span>
 </pre><pre class="rust">
 <span class="comment">// Copyright 2017 The Chromium OS Authors. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a BSD-style license that can be</span>
@@ -1371,6 +1397,8 @@
     <span class="ident">ConfigurePciDevice</span>(<span class="ident">arch::DeviceRegistrationError</span>),
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;error configuring the system&quot;</span>)]</span>
     <span class="ident">ConfigureSystem</span>,
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;unable to create ACPI tables&quot;</span>)]</span>
+    <span class="ident">CreateAcpi</span>,
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;unable to create battery devices: {0}&quot;</span>)]</span>
     <span class="ident">CreateBatDevices</span>(<span class="ident">arch::DeviceRegistrationError</span>),
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;error creating devices: {0}&quot;</span>)]</span>
@@ -1652,6 +1680,7 @@
         <span class="ident">ramoops_region</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">arch::pstore::RamoopsRegion</span><span class="op">&gt;</span>,
         <span class="ident">devs</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">BusDeviceObj</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Minijail</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
         <span class="ident">irq_chip</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">IrqChipX86_64</span>,
+        <span class="ident">kvm_vcpu_ids</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">RunnableLinuxVm</span><span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">Vcpu</span><span class="op">&gt;</span>, <span class="self">Self</span><span class="ident">::Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">V</span>: <span class="ident">VmX86_64</span>,
@@ -1752,8 +1781,22 @@
         <span class="ident">mptable::setup_mptable</span>(<span class="kw-2">&amp;</span><span class="ident">mem</span>, <span class="ident">vcpu_count</span> <span class="kw">as</span> <span class="ident">u8</span>, <span class="ident">pci_irqs</span>).<span class="ident">map_err</span>(<span class="ident">Error::SetupMptable</span>)<span class="question-mark">?</span>;
         <span class="ident">smbios::setup_smbios</span>(<span class="kw-2">&amp;</span><span class="ident">mem</span>, <span class="ident">components</span>.<span class="ident">dmi_path</span>).<span class="ident">map_err</span>(<span class="ident">Error::SetupSmbios</span>)<span class="question-mark">?</span>;
 
+        <span class="kw">let</span> <span class="ident">host_cpus</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">components</span>.<span class="ident">host_cpu_topology</span> {
+            <span class="ident">components</span>.<span class="ident">vcpu_affinity</span>.<span class="ident">clone</span>()
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        };
+
         <span class="comment">// TODO (tjeznach) Write RSDP to bootconfig before writing to memory</span>
-        <span class="ident">acpi::create_acpi_tables</span>(<span class="kw-2">&amp;</span><span class="ident">mem</span>, <span class="ident">vcpu_count</span> <span class="kw">as</span> <span class="ident">u8</span>, <span class="ident">X86_64_SCI_IRQ</span>, <span class="ident">acpi_dev_resource</span>);
+        <span class="ident">acpi::create_acpi_tables</span>(
+            <span class="kw-2">&amp;</span><span class="ident">mem</span>,
+            <span class="ident">vcpu_count</span> <span class="kw">as</span> <span class="ident">u8</span>,
+            <span class="ident">X86_64_SCI_IRQ</span>,
+            <span class="ident">acpi_dev_resource</span>,
+            <span class="ident">host_cpus</span>,
+            <span class="ident">kvm_vcpu_ids</span>,
+        )
+        .<span class="ident">ok_or</span>(<span class="ident">Error::CreateAcpi</span>)<span class="question-mark">?</span>;
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cmdline</span> <span class="op">=</span> <span class="self">Self</span><span class="ident">::get_base_linux_cmdline</span>();
 
@@ -1833,9 +1876,18 @@
         <span class="ident">num_cpus</span>: <span class="ident">usize</span>,
         <span class="ident">has_bios</span>: <span class="ident">bool</span>,
         <span class="ident">no_smt</span>: <span class="ident">bool</span>,
+        <span class="ident">host_cpu_topology</span>: <span class="ident">bool</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="ident">cpuid::setup_cpuid</span>(<span class="ident">hypervisor</span>, <span class="ident">irq_chip</span>, <span class="ident">vcpu</span>, <span class="ident">vcpu_id</span>, <span class="ident">num_cpus</span>, <span class="ident">no_smt</span>)
-            .<span class="ident">map_err</span>(<span class="ident">Error::SetupCpuid</span>)<span class="question-mark">?</span>;
+        <span class="ident">cpuid::setup_cpuid</span>(
+            <span class="ident">hypervisor</span>,
+            <span class="ident">irq_chip</span>,
+            <span class="ident">vcpu</span>,
+            <span class="ident">vcpu_id</span>,
+            <span class="ident">num_cpus</span>,
+            <span class="ident">no_smt</span>,
+            <span class="ident">host_cpu_topology</span>,
+        )
+        .<span class="ident">map_err</span>(<span class="ident">Error::SetupCpuid</span>)<span class="question-mark">?</span>;
 
         <span class="kw">if</span> <span class="ident">has_bios</span> {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(());

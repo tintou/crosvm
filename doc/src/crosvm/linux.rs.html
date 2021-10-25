@@ -3224,6 +3224,24 @@
 <span id="3224">3224</span>
 <span id="3225">3225</span>
 <span id="3226">3226</span>
+<span id="3227">3227</span>
+<span id="3228">3228</span>
+<span id="3229">3229</span>
+<span id="3230">3230</span>
+<span id="3231">3231</span>
+<span id="3232">3232</span>
+<span id="3233">3233</span>
+<span id="3234">3234</span>
+<span id="3235">3235</span>
+<span id="3236">3236</span>
+<span id="3237">3237</span>
+<span id="3238">3238</span>
+<span id="3239">3239</span>
+<span id="3240">3240</span>
+<span id="3241">3241</span>
+<span id="3242">3242</span>
+<span id="3243">3243</span>
+<span id="3244">3244</span>
 </pre><pre class="rust">
 <span class="comment">// Copyright 2017 The Chromium OS Authors. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a BSD-style license that can be</span>
@@ -5079,6 +5097,7 @@
 <span class="comment">// Sets up a vcpu and converts it into a runnable vcpu.</span>
 <span class="kw">fn</span> <span class="ident">runnable_vcpu</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>(
     <span class="ident">cpu_id</span>: <span class="ident">usize</span>,
+    <span class="ident">kvm_vcpu_id</span>: <span class="ident">usize</span>,
     <span class="ident">vcpu</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
     <span class="ident">vm</span>: <span class="kw">impl</span> <span class="ident">VmArch</span>,
     <span class="ident">irq_chip</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">IrqChipArch</span>,
@@ -5089,6 +5108,7 @@
     <span class="ident">has_bios</span>: <span class="ident">bool</span>,
     <span class="ident">use_hypervisor_signals</span>: <span class="ident">bool</span>,
     <span class="ident">enable_per_vm_core_scheduling</span>: <span class="ident">bool</span>,
+    <span class="ident">host_cpu_topology</span>: <span class="ident">bool</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">V</span>, <span class="ident">VcpuRunHandle</span>)<span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">V</span>: <span class="ident">VcpuArch</span>,
@@ -5099,7 +5119,7 @@
             <span class="comment">// If vcpu is None, it means this arch/hypervisor requires create_vcpu to be called from</span>
             <span class="comment">// the vcpu thread.</span>
             <span class="kw">match</span> <span class="ident">vm</span>
-                .<span class="ident">create_vcpu</span>(<span class="ident">cpu_id</span>)
+                .<span class="ident">create_vcpu</span>(<span class="ident">kvm_vcpu_id</span>)
                 .<span class="ident">map_err</span>(<span class="ident">Error::CreateVcpu</span>)<span class="question-mark">?</span>
                 .<span class="ident">downcast</span>::<span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>()
             {
@@ -5128,6 +5148,7 @@
         <span class="ident">vcpu_count</span>,
         <span class="ident">has_bios</span>,
         <span class="ident">no_smt</span>,
+        <span class="ident">host_cpu_topology</span>,
     )
     .<span class="ident">map_err</span>(<span class="ident">Error::ConfigureVcpu</span>)<span class="question-mark">?</span>;
 
@@ -5238,6 +5259,7 @@
 
 <span class="kw">fn</span> <span class="ident">run_vcpu</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>(
     <span class="ident">cpu_id</span>: <span class="ident">usize</span>,
+    <span class="ident">kvm_vcpu_id</span>: <span class="ident">usize</span>,
     <span class="ident">vcpu</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">V</span><span class="op">&gt;</span>,
     <span class="ident">vm</span>: <span class="kw">impl</span> <span class="ident">VmArch</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     <span class="kw-2">mut</span> <span class="ident">irq_chip</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">IrqChipArch</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>,
@@ -5258,6 +5280,7 @@
         <span class="ident">mpsc::Sender</span><span class="op">&lt;</span><span class="ident">VcpuDebugStatusMessage</span><span class="op">&gt;</span>,
     <span class="op">&gt;</span>,
     <span class="ident">enable_per_vm_core_scheduling</span>: <span class="ident">bool</span>,
+    <span class="ident">host_cpu_topology</span>: <span class="ident">bool</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">JoinHandle</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">V</span>: <span class="ident">VcpuArch</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
@@ -5273,6 +5296,7 @@
             <span class="kw">let</span> <span class="ident">guest_mem</span> <span class="op">=</span> <span class="ident">vm</span>.<span class="ident">get_memory</span>().<span class="ident">clone</span>();
             <span class="kw">let</span> <span class="ident">runnable_vcpu</span> <span class="op">=</span> <span class="ident">runnable_vcpu</span>(
                 <span class="ident">cpu_id</span>,
+                <span class="ident">kvm_vcpu_id</span>,
                 <span class="ident">vcpu</span>,
                 <span class="ident">vm</span>,
                 <span class="ident">irq_chip</span>.<span class="ident">as_mut</span>(),
@@ -5283,6 +5307,7 @@
                 <span class="ident">has_bios</span>,
                 <span class="ident">use_hypervisor_signals</span>,
                 <span class="ident">enable_per_vm_core_scheduling</span>,
+                <span class="ident">host_cpu_topology</span>,
             );
 
             <span class="ident">start_barrier</span>.<span class="ident">wait</span>();
@@ -5596,6 +5621,7 @@
         <span class="ident">gdb</span>: <span class="prelude-val">None</span>,
         <span class="ident">dmi_path</span>: <span class="ident">cfg</span>.<span class="ident">dmi_path</span>.<span class="ident">clone</span>(),
         <span class="ident">no_legacy</span>: <span class="ident">cfg</span>.<span class="ident">no_legacy</span>,
+        <span class="ident">host_cpu_topology</span>: <span class="ident">cfg</span>.<span class="ident">host_cpu_topology</span>,
     })
 }
 
@@ -5845,6 +5871,9 @@
         <span class="ident">components</span>.<span class="ident">acpi_sdts</span> <span class="op">=</span> <span class="ident">sdts</span>;
     }
 
+    <span class="comment">// KVM_CREATE_VCPU uses apic id for x86 and uses cpu id for others.</span>
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">kvm_vcpu_ids</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
+
     <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;direct&quot;</span>), <span class="ident">allow</span>(<span class="ident">unused_mut</span>))]</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">linux</span> <span class="op">=</span> <span class="ident">Arch::build_vm</span>::<span class="op">&lt;</span><span class="ident">V</span>, <span class="ident">Vcpu</span><span class="op">&gt;</span>(
         <span class="ident">components</span>,
@@ -5857,6 +5886,7 @@
         <span class="ident">ramoops_region</span>,
         <span class="ident">devices</span>,
         <span class="ident">irq_chip</span>,
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">kvm_vcpu_ids</span>,
     )
     .<span class="ident">map_err</span>(<span class="ident">Error::BuildVm</span>)<span class="question-mark">?</span>;
 
@@ -5935,6 +5965,8 @@
         <span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">map_request</span>),
         <span class="ident">gralloc</span>,
         <span class="ident">cfg</span>.<span class="ident">per_vm_core_scheduling</span>,
+        <span class="ident">cfg</span>.<span class="ident">host_cpu_topology</span>,
+        <span class="ident">kvm_vcpu_ids</span>,
     )
 }
 
@@ -6028,6 +6060,8 @@
     <span class="ident">map_request</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ExternalMapping</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="kw-2">mut</span> <span class="ident">gralloc</span>: <span class="ident">RutabagaGralloc</span>,
     <span class="ident">enable_per_vm_core_scheduling</span>: <span class="ident">bool</span>,
+    <span class="ident">host_cpu_topology</span>: <span class="ident">bool</span>,
+    <span class="ident">kvm_vcpu_ids</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PollToken</span>)]</span>
     <span class="kw">enum</span> <span class="ident">Token</span> {
@@ -6116,6 +6150,7 @@
         };
         <span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="ident">run_vcpu</span>(
             <span class="ident">cpu_id</span>,
+            <span class="ident">kvm_vcpu_ids</span>[<span class="ident">cpu_id</span>],
             <span class="ident">vcpu</span>,
             <span class="ident">linux</span>.<span class="ident">vm</span>.<span class="ident">try_clone</span>().<span class="ident">map_err</span>(<span class="ident">Error::CloneEvent</span>)<span class="question-mark">?</span>,
             <span class="ident">linux</span>.<span class="ident">irq_chip</span>.<span class="ident">try_box_clone</span>().<span class="ident">map_err</span>(<span class="ident">Error::CloneEvent</span>)<span class="question-mark">?</span>,
@@ -6135,6 +6170,7 @@
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;x86_64&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;gdb&quot;</span>))]</span>
             <span class="ident">to_gdb_channel</span>.<span class="ident">clone</span>(),
             <span class="ident">enable_per_vm_core_scheduling</span>,
+            <span class="ident">host_cpu_topology</span>,
         )<span class="question-mark">?</span>;
         <span class="ident">vcpu_handles</span>.<span class="ident">push</span>((<span class="ident">handle</span>, <span class="ident">to_vcpu_channel</span>));
     }
