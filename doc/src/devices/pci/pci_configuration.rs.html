@@ -1212,6 +1212,9 @@
 <span id="1212">1212</span>
 <span id="1213">1213</span>
 <span id="1214">1214</span>
+<span id="1215">1215</span>
+<span id="1216">1216</span>
+<span id="1217">1217</span>
 </pre><pre class="rust">
 <span class="comment">// Copyright 2018 The Chromium OS Authors. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a BSD-style license that can be</span>
@@ -1532,8 +1535,11 @@
                 <span class="ident">registers</span>[<span class="number">3</span>] <span class="op">=</span> <span class="number">0x0001_0000</span>; <span class="comment">// Header type 1 (bridge)</span>
                 <span class="ident">writable_bits</span>[<span class="number">6</span>] <span class="op">=</span> <span class="number">0x00ff_ffff</span>; <span class="comment">// Primary/secondary/subordinate bus number,</span>
                                                 <span class="comment">// secondary latency timer</span>
+                <span class="ident">registers</span>[<span class="number">7</span>] <span class="op">=</span> <span class="number">0x0000_00f0</span>; <span class="comment">// IO base &gt; IO Limit, no IO address on secondary side at initialize</span>
                 <span class="ident">writable_bits</span>[<span class="number">7</span>] <span class="op">=</span> <span class="number">0xf900_0000</span>; <span class="comment">// IO base and limit, secondary status,</span>
+                <span class="ident">registers</span>[<span class="number">8</span>] <span class="op">=</span> <span class="number">0x0000_fff0</span>; <span class="comment">// mem base &gt; mem Limit, no MMIO address on secondary side at initialize</span>
                 <span class="ident">writable_bits</span>[<span class="number">8</span>] <span class="op">=</span> <span class="number">0xfff0_fff0</span>; <span class="comment">// Memory base and limit</span>
+                <span class="ident">registers</span>[<span class="number">9</span>] <span class="op">=</span> <span class="number">0x0001_fff1</span>; <span class="comment">// pmem base &gt; pmem Limit, no prefetch MMIO address on secondary side at initialize</span>
                 <span class="ident">writable_bits</span>[<span class="number">9</span>] <span class="op">=</span> <span class="number">0xfff0_fff0</span>; <span class="comment">// Prefetchable base and limit</span>
                 <span class="ident">writable_bits</span>[<span class="number">10</span>] <span class="op">=</span> <span class="number">0xffff_ffff</span>; <span class="comment">// Prefetchable base upper 32 bits</span>
                 <span class="ident">writable_bits</span>[<span class="number">11</span>] <span class="op">=</span> <span class="number">0xffff_ffff</span>; <span class="comment">// Prefetchable limit upper 32 bits</span>
