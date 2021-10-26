@@ -348,6 +348,12 @@
 <span id="348">348</span>
 <span id="349">349</span>
 <span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
 </pre><pre class="rust">
 <span class="comment">// Copyright 2020 The Chromium OS Authors. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a BSD-style license that can be</span>
@@ -368,7 +374,9 @@
 <span class="kw">use</span> <span class="ident">gdbstub::arch::Arch</span>;
 <span class="kw">use</span> <span class="ident">gdbstub::target::ext::base::singlethread</span>::{<span class="ident">ResumeAction</span>, <span class="ident">SingleThreadOps</span>, <span class="ident">StopReason</span>};
 <span class="kw">use</span> <span class="ident">gdbstub::target::ext::base</span>::{<span class="ident">BaseOps</span>, <span class="ident">GdbInterrupt</span>};
-<span class="kw">use</span> <span class="ident">gdbstub::target::ext::breakpoints</span>::{<span class="ident">Breakpoints</span>, <span class="ident">BreakpointsOps</span>, <span class="ident">HwBreakpoint</span>};
+<span class="kw">use</span> <span class="ident">gdbstub::target::ext::breakpoints</span>::{
+    <span class="ident">Breakpoints</span>, <span class="ident">BreakpointsOps</span>, <span class="ident">HwBreakpoint</span>, <span class="ident">HwBreakpointOps</span>,
+};
 <span class="kw">use</span> <span class="ident">gdbstub::target::TargetError::NonFatal</span>;
 <span class="kw">use</span> <span class="ident">gdbstub::target</span>::{<span class="ident">Target</span>, <span class="ident">TargetResult</span>};
 <span class="kw">use</span> <span class="ident">gdbstub::Connection</span>;
@@ -643,6 +651,12 @@
     }
 }
 
+<span class="kw">impl</span> <span class="ident">Breakpoints</span> <span class="kw">for</span> <span class="ident">GdbStub</span> {
+    <span class="kw">fn</span> <span class="ident">hw_breakpoint</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HwBreakpointOps</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Some</span>(<span class="self">self</span>)
+    }
+}
+
 <span class="kw">impl</span> <span class="ident">HwBreakpoint</span> <span class="kw">for</span> <span class="ident">GdbStub</span> {
     <span class="doccomment">/// Add a new hardware breakpoint.</span>
     <span class="doccomment">/// Return `Ok(false)` if the operation could not be completed.</span>
@@ -697,8 +711,6 @@
         }
     }
 }
-
-<span class="kw">impl</span> <span class="ident">Breakpoints</span> <span class="kw">for</span> <span class="ident">GdbStub</span> {}
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="crosvm" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
