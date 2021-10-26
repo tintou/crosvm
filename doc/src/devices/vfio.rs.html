@@ -1074,14 +1074,11 @@
 <span id="1074">1074</span>
 <span id="1075">1075</span>
 <span id="1076">1076</span>
-<span id="1077">1077</span>
 </pre><pre class="rust">
 <span class="comment">// Copyright 2019 The Chromium OS Authors. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a BSD-style license that can be</span>
 <span class="comment">// found in the LICENSE file.</span>
 
-<span class="kw">use</span> <span class="ident">data_model::vec_with_array_field</span>;
-<span class="kw">use</span> <span class="ident">once_cell::sync::OnceCell</span>;
 <span class="kw">use</span> <span class="ident">std::cell::RefCell</span>;
 <span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
 <span class="kw">use</span> <span class="ident">std::ffi::CString</span>;
@@ -1092,18 +1089,19 @@
 <span class="kw">use</span> <span class="ident">std::path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>};
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 <span class="kw">use</span> <span class="ident">std::u32</span>;
-<span class="kw">use</span> <span class="ident">sync::Mutex</span>;
 
 <span class="kw">use</span> <span class="ident">base</span>::{
     <span class="ident">ioctl</span>, <span class="ident">ioctl_with_mut_ref</span>, <span class="ident">ioctl_with_ptr</span>, <span class="ident">ioctl_with_ref</span>, <span class="ident">ioctl_with_val</span>, <span class="ident">warn</span>,
     <span class="ident">AsRawDescriptor</span>, <span class="ident">Error</span>, <span class="ident">Event</span>, <span class="ident">FromRawDescriptor</span>, <span class="ident">RawDescriptor</span>, <span class="ident">SafeDescriptor</span>,
 };
+<span class="kw">use</span> <span class="ident">data_model::vec_with_array_field</span>;
 <span class="kw">use</span> <span class="ident">hypervisor</span>::{<span class="ident">DeviceKind</span>, <span class="ident">Vm</span>};
+<span class="kw">use</span> <span class="ident">once_cell::sync::OnceCell</span>;
 <span class="kw">use</span> <span class="ident">remain::sorted</span>;
+<span class="kw">use</span> <span class="ident">sync::Mutex</span>;
 <span class="kw">use</span> <span class="ident">thiserror::Error</span>;
-<span class="kw">use</span> <span class="ident">vm_memory::GuestMemory</span>;
-
 <span class="kw">use</span> <span class="ident">vfio_sys</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">vm_memory::GuestMemory</span>;
 
 <span class="attribute">#[<span class="ident">sorted</span>]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Error</span>, <span class="ident">Debug</span>)]</span>
