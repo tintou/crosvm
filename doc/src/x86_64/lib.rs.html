@@ -1664,7 +1664,7 @@
         <span class="ident">SystemAllocator::builder</span>()
             .<span class="ident">add_io_addresses</span>(<span class="number">0xc000</span>, <span class="number">0x10000</span>)
             .<span class="ident">add_low_mmio_addresses</span>(<span class="ident">END_ADDR_BEFORE_32BITS</span>, <span class="ident">MMIO_SIZE</span>)
-            .<span class="ident">add_high_mmio_addresses</span>(<span class="ident">high_mmio_start</span>, <span class="self">Self</span><span class="ident">::get_phys_max_addr</span>() <span class="op">-</span> <span class="ident">high_mmio_start</span>)
+            .<span class="ident">add_high_mmio_addresses</span>(<span class="ident">high_mmio_start</span>, <span class="ident">u64::max_value</span>() <span class="op">-</span> <span class="ident">high_mmio_start</span>)
             .<span class="ident">create_allocator</span>(<span class="ident">X86_64_IRQ_BASE</span>)
             .<span class="ident">unwrap</span>()
     }
