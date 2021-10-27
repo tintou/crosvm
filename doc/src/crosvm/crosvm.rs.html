@@ -482,6 +482,9 @@
 <span id="482">482</span>
 <span id="483">483</span>
 <span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
 </pre><pre class="rust">
 <span class="comment">// Copyright 2019 The Chromium OS Authors. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a BSD-style license that can be</span>
@@ -515,6 +518,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;audio&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">devices::Ac97Parameters</span>;
 <span class="kw">use</span> <span class="ident">devices::ProtectionType</span>;
+<span class="kw">use</span> <span class="ident">devices::StubPciParameters</span>;
 <span class="kw">use</span> <span class="ident">libc</span>::{<span class="ident">getegid</span>, <span class="ident">geteuid</span>};
 <span class="kw">use</span> <span class="ident">vm_control::BatteryType</span>;
 
@@ -869,6 +873,7 @@
     <span class="kw">pub</span> <span class="ident">dmi_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">no_legacy</span>: <span class="ident">bool</span>,
     <span class="kw">pub</span> <span class="ident">host_cpu_topology</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">stub_pci_devices</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StubPciParameters</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Config</span> {
@@ -964,6 +969,7 @@
             <span class="ident">dmi_path</span>: <span class="prelude-val">None</span>,
             <span class="ident">no_legacy</span>: <span class="bool-val">false</span>,
             <span class="ident">host_cpu_topology</span>: <span class="bool-val">false</span>,
+            <span class="ident">stub_pci_devices</span>: <span class="ident">Vec::new</span>(),
         }
     }
 }

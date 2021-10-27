@@ -3541,6 +3541,82 @@
 <span id="3541">3541</span>
 <span id="3542">3542</span>
 <span id="3543">3543</span>
+<span id="3544">3544</span>
+<span id="3545">3545</span>
+<span id="3546">3546</span>
+<span id="3547">3547</span>
+<span id="3548">3548</span>
+<span id="3549">3549</span>
+<span id="3550">3550</span>
+<span id="3551">3551</span>
+<span id="3552">3552</span>
+<span id="3553">3553</span>
+<span id="3554">3554</span>
+<span id="3555">3555</span>
+<span id="3556">3556</span>
+<span id="3557">3557</span>
+<span id="3558">3558</span>
+<span id="3559">3559</span>
+<span id="3560">3560</span>
+<span id="3561">3561</span>
+<span id="3562">3562</span>
+<span id="3563">3563</span>
+<span id="3564">3564</span>
+<span id="3565">3565</span>
+<span id="3566">3566</span>
+<span id="3567">3567</span>
+<span id="3568">3568</span>
+<span id="3569">3569</span>
+<span id="3570">3570</span>
+<span id="3571">3571</span>
+<span id="3572">3572</span>
+<span id="3573">3573</span>
+<span id="3574">3574</span>
+<span id="3575">3575</span>
+<span id="3576">3576</span>
+<span id="3577">3577</span>
+<span id="3578">3578</span>
+<span id="3579">3579</span>
+<span id="3580">3580</span>
+<span id="3581">3581</span>
+<span id="3582">3582</span>
+<span id="3583">3583</span>
+<span id="3584">3584</span>
+<span id="3585">3585</span>
+<span id="3586">3586</span>
+<span id="3587">3587</span>
+<span id="3588">3588</span>
+<span id="3589">3589</span>
+<span id="3590">3590</span>
+<span id="3591">3591</span>
+<span id="3592">3592</span>
+<span id="3593">3593</span>
+<span id="3594">3594</span>
+<span id="3595">3595</span>
+<span id="3596">3596</span>
+<span id="3597">3597</span>
+<span id="3598">3598</span>
+<span id="3599">3599</span>
+<span id="3600">3600</span>
+<span id="3601">3601</span>
+<span id="3602">3602</span>
+<span id="3603">3603</span>
+<span id="3604">3604</span>
+<span id="3605">3605</span>
+<span id="3606">3606</span>
+<span id="3607">3607</span>
+<span id="3608">3608</span>
+<span id="3609">3609</span>
+<span id="3610">3610</span>
+<span id="3611">3611</span>
+<span id="3612">3612</span>
+<span id="3613">3613</span>
+<span id="3614">3614</span>
+<span id="3615">3615</span>
+<span id="3616">3616</span>
+<span id="3617">3617</span>
+<span id="3618">3618</span>
+<span id="3619">3619</span>
 </pre><pre class="rust">
 <span class="comment">// Copyright 2017 The Chromium OS Authors. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a BSD-style license that can be</span>
@@ -3551,6 +3627,7 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">panic_hook</span>;
 
 <span class="kw">use</span> <span class="ident">std::collections::BTreeMap</span>;
+<span class="kw">use</span> <span class="ident">std::convert::TryFrom</span>;
 <span class="kw">use</span> <span class="ident">std::default::Default</span>;
 <span class="kw">use</span> <span class="ident">std::fs</span>::{<span class="ident">File</span>, <span class="ident">OpenOptions</span>};
 <span class="kw">use</span> <span class="ident">std::io</span>::{<span class="ident">BufRead</span>, <span class="ident">BufReader</span>};
@@ -3583,9 +3660,9 @@
     },
     <span class="ident">vhost::user::device::run_gpu_device</span>,
 };
-<span class="kw">use</span> <span class="ident">devices::ProtectionType</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;audio&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">devices</span>::{<span class="ident">Ac97Backend</span>, <span class="ident">Ac97Parameters</span>};
+<span class="kw">use</span> <span class="ident">devices</span>::{<span class="ident">PciAddress</span>, <span class="ident">PciClassCode</span>, <span class="ident">ProtectionType</span>, <span class="ident">StubPciParameters</span>};
 <span class="kw">use</span> <span class="ident">disk</span>::{<span class="self">self</span>, <span class="ident">QcowFile</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;composite-disk&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">disk</span>::{
@@ -4418,6 +4495,52 @@
         <span class="ident">path</span>,
         <span class="ident">ranges</span>: <span class="ident">ranges</span><span class="question-mark">?</span>,
     })
+}
+
+<span class="kw">fn</span> <span class="ident">parse_stub_pci_parameters</span>(<span class="ident">s</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">argument::Result</span><span class="op">&lt;</span><span class="ident">StubPciParameters</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">ok_or</span>(<span class="ident">argument::Error::ExpectedValue</span>(<span class="ident">String::from</span>(
+        <span class="string">&quot;stub-pci-device configuration expected&quot;</span>,
+    )))<span class="question-mark">?</span>;
+
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">argument::parse_key_value_options</span>(<span class="string">&quot;stub-pci-device&quot;</span>, <span class="ident">s</span>, <span class="string">&#39;,&#39;</span>);
+    <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">options</span>
+        .<span class="ident">next</span>()
+        .<span class="ident">ok_or</span>(<span class="ident">argument::Error::ExpectedValue</span>(<span class="ident">String::from</span>(
+            <span class="string">&quot;stub-pci-device: expected device address&quot;</span>,
+        )))<span class="question-mark">?</span>
+        .<span class="ident">key</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">params</span> <span class="op">=</span> <span class="ident">StubPciParameters</span> {
+        <span class="ident">address</span>: <span class="ident">PciAddress::from_string</span>(<span class="ident">addr</span>),
+        <span class="ident">vendor_id</span>: <span class="number">0</span>,
+        <span class="ident">device_id</span>: <span class="number">0</span>,
+        <span class="ident">class</span>: <span class="ident">PciClassCode::Other</span>,
+        <span class="ident">subclass</span>: <span class="number">0</span>,
+        <span class="ident">programming_interface</span>: <span class="number">0</span>,
+        <span class="ident">multifunction</span>: <span class="bool-val">false</span>,
+        <span class="ident">subsystem_device_id</span>: <span class="number">0</span>,
+        <span class="ident">subsystem_vendor_id</span>: <span class="number">0</span>,
+        <span class="ident">revision_id</span>: <span class="number">0</span>,
+    };
+    <span class="kw">for</span> <span class="ident">opt</span> <span class="kw">in</span> <span class="ident">options</span> {
+        <span class="kw">match</span> <span class="ident">opt</span>.<span class="ident">key</span>() {
+            <span class="string">&quot;vendor&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">params</span>.<span class="ident">vendor_id</span> <span class="op">=</span> <span class="ident">opt</span>.<span class="ident">parse_numeric</span>::<span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>()<span class="question-mark">?</span>,
+            <span class="string">&quot;device&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">params</span>.<span class="ident">device_id</span> <span class="op">=</span> <span class="ident">opt</span>.<span class="ident">parse_numeric</span>::<span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>()<span class="question-mark">?</span>,
+            <span class="string">&quot;class&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">class</span> <span class="op">=</span> <span class="ident">opt</span>.<span class="ident">parse_numeric</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+                <span class="ident">params</span>.<span class="ident">class</span> <span class="op">=</span> <span class="ident">PciClassCode::try_from</span>((<span class="ident">class</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">16</span>) <span class="kw">as</span> <span class="ident">u8</span>)
+                    .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">opt</span>.<span class="ident">invalid_value_err</span>(<span class="ident">String::from</span>(<span class="string">&quot;Unknown class code&quot;</span>)))<span class="question-mark">?</span>;
+                <span class="ident">params</span>.<span class="ident">subclass</span> <span class="op">=</span> (<span class="ident">class</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">8</span>) <span class="kw">as</span> <span class="ident">u8</span>;
+                <span class="ident">params</span>.<span class="ident">programming_interface</span> <span class="op">=</span> <span class="ident">class</span> <span class="kw">as</span> <span class="ident">u8</span>;
+            }
+            <span class="string">&quot;multifunction&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">params</span>.<span class="ident">multifunction</span> <span class="op">=</span> <span class="ident">opt</span>.<span class="ident">parse_or</span>::<span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>(<span class="bool-val">true</span>)<span class="question-mark">?</span>,
+            <span class="string">&quot;subsystem_vendor&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">params</span>.<span class="ident">subsystem_vendor_id</span> <span class="op">=</span> <span class="ident">opt</span>.<span class="ident">parse_numeric</span>::<span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>()<span class="question-mark">?</span>,
+            <span class="string">&quot;subsystem_device&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">params</span>.<span class="ident">subsystem_device_id</span> <span class="op">=</span> <span class="ident">opt</span>.<span class="ident">parse_numeric</span>::<span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>()<span class="question-mark">?</span>,
+            <span class="string">&quot;revision&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">params</span>.<span class="ident">revision_id</span> <span class="op">=</span> <span class="ident">opt</span>.<span class="ident">parse_numeric</span>::<span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>()<span class="question-mark">?</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">opt</span>.<span class="ident">invalid_key_err</span>()),
+        }
+    }
+
+    <span class="prelude-val">Ok</span>(<span class="ident">params</span>)
 }
 
 <span class="kw">fn</span> <span class="ident">set_argument</span>(<span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Config</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">argument::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
@@ -5527,6 +5650,9 @@
         <span class="string">&quot;host-cpu-topology&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
             <span class="ident">cfg</span>.<span class="ident">host_cpu_topology</span> <span class="op">=</span> <span class="bool-val">true</span>;
         }
+        <span class="string">&quot;stub-pci-device&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">cfg</span>.<span class="ident">stub_pci_devices</span>.<span class="ident">push</span>(<span class="ident">parse_stub_pci_parameters</span>(<span class="ident">value</span>)<span class="question-mark">?</span>);
+        }
         <span class="string">&quot;help&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">argument::Error::PrintHelp</span>),
         <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable!</span>(),
     }
@@ -5830,6 +5956,15 @@ iommu=on|off - indicates whether to enable virtio IOMMU for this device&quot;</s
           <span class="ident">Argument::flag</span>(<span class="string">&quot;no-legacy&quot;</span>, <span class="string">&quot;Don&#39;t use legacy KBD/RTC devices emulation&quot;</span>),
           <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;x86&quot;</span>, <span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;x86_64&quot;</span>))]</span>
           <span class="ident">Argument::flag</span>(<span class="string">&quot;host-cpu-topology&quot;</span>, <span class="string">&quot;Use mirror cpu topology of Host for Guest VM&quot;</span>),
+          <span class="ident">Argument::value</span>(<span class="string">&quot;stub-pci-device&quot;</span>, <span class="string">&quot;DOMAIN:BUS:DEVICE.FUNCTION[,vendor=NUM][,device=NUM][,class=NUM][,multifunction][,subsystem_vendor=NUM][,subsystem_device=NUM][,revision=NUM]&quot;</span>, <span class="string">&quot;Comma-separated key=value pairs for setting up a stub PCI device that just enumerates. The first option in the list must specify a PCI address to claim.
+                              Optional further parameters
+                              vendor=NUM - PCI vendor ID
+                              device=NUM - PCI device ID
+                              class=NUM - PCI class (including class code, subclass, and programming interface)
+                              multifunction - whether to set the multifunction flag
+                              subsystem_vendor=NUM - PCI subsystem vendor ID
+                              subsystem_device=NUM - PCI subsystem device ID
+                              revision=NUM - revision&quot;</span>),
           <span class="ident">Argument::short_flag</span>(<span class="string">&#39;h&#39;</span>, <span class="string">&quot;help&quot;</span>, <span class="string">&quot;Print help message.&quot;</span>)];
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cfg</span> <span class="op">=</span> <span class="ident">Config::default</span>();
@@ -7083,6 +7218,23 @@ with a &#39;--backing_file&#39;.&quot;</span>
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">parse_battery_invaild_type_value</span>() {
         <span class="ident">parse_battery_options</span>(<span class="prelude-val">Some</span>(<span class="string">&quot;type=xxx&quot;</span>)).<span class="ident">expect_err</span>(<span class="string">&quot;parse should have failed&quot;</span>);
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">parse_stub_pci</span>() {
+        <span class="kw">let</span> <span class="ident">params</span> <span class="op">=</span> <span class="ident">parse_stub_pci_parameters</span>(<span class="prelude-val">Some</span>(<span class="string">&quot;0000:01:02.3,vendor=0xfffe,device=0xfffd,class=0xffc1c2,multifunction=true,subsystem_vendor=0xfffc,subsystem_device=0xfffb,revision=0xa&quot;</span>)).<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq!</span>(<span class="ident">params</span>.<span class="ident">address</span>.<span class="ident">bus</span>, <span class="number">1</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">params</span>.<span class="ident">address</span>.<span class="ident">dev</span>, <span class="number">2</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">params</span>.<span class="ident">address</span>.<span class="ident">func</span>, <span class="number">3</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">params</span>.<span class="ident">vendor_id</span>, <span class="number">0xfffe</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">params</span>.<span class="ident">device_id</span>, <span class="number">0xfffd</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">params</span>.<span class="ident">class</span> <span class="kw">as</span> <span class="ident">u8</span>, <span class="ident">PciClassCode::Other</span> <span class="kw">as</span> <span class="ident">u8</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">params</span>.<span class="ident">subclass</span>, <span class="number">0xc1</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">params</span>.<span class="ident">programming_interface</span>, <span class="number">0xc2</span>);
+        <span class="macro">assert!</span>(<span class="ident">params</span>.<span class="ident">multifunction</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">params</span>.<span class="ident">subsystem_vendor_id</span>, <span class="number">0xfffc</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">params</span>.<span class="ident">subsystem_device_id</span>, <span class="number">0xfffb</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">params</span>.<span class="ident">revision_id</span>, <span class="number">0xa</span>);
     }
 }
 </pre></div>
