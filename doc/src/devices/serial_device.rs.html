@@ -347,6 +347,23 @@
 <span id="347">347</span>
 <span id="348">348</span>
 <span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
 </pre><pre class="rust">
 <span class="comment">// Copyright 2020 The Chromium OS Authors. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a BSD-style license that can be</span>
@@ -362,7 +379,10 @@
 <span class="kw">use</span> <span class="ident">std::thread</span>;
 <span class="kw">use</span> <span class="ident">std::time::Duration</span>;
 
-<span class="kw">use</span> <span class="ident">base</span>::{<span class="ident">error</span>, <span class="ident">info</span>, <span class="ident">read_raw_stdin</span>, <span class="ident">syslog</span>, <span class="ident">AsRawDescriptor</span>, <span class="ident">Event</span>, <span class="ident">RawDescriptor</span>};
+<span class="kw">use</span> <span class="ident">base</span>::{
+    <span class="ident">error</span>, <span class="ident">info</span>, <span class="ident">read_raw_stdin</span>, <span class="ident">safe_descriptor_from_path</span>, <span class="ident">syslog</span>, <span class="ident">AsRawDescriptor</span>, <span class="ident">Event</span>,
+    <span class="ident">RawDescriptor</span>,
+};
 <span class="kw">use</span> <span class="ident">minijail::Minijail</span>;
 <span class="kw">use</span> <span class="ident">remain::sorted</span>;
 <span class="kw">use</span> <span class="ident">thiserror::Error</span> <span class="kw">as</span> <span class="ident">ThisError</span>;
@@ -570,7 +590,14 @@
         <span class="kw">let</span> <span class="ident">evt</span> <span class="op">=</span> <span class="ident">evt</span>.<span class="ident">try_clone</span>().<span class="ident">map_err</span>(<span class="ident">Error::CloneEvent</span>)<span class="question-mark">?</span>;
         <span class="ident">keep_rds</span>.<span class="ident">push</span>(<span class="ident">evt</span>.<span class="ident">as_raw_descriptor</span>());
         <span class="kw">let</span> <span class="ident">input</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">io::Read</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">input_path</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">input</span> {
-            <span class="kw">let</span> <span class="ident">input_file</span> <span class="op">=</span> <span class="ident">File::open</span>(<span class="ident">input_path</span>.<span class="ident">as_path</span>()).<span class="ident">map_err</span>(<span class="ident">Error::FileError</span>)<span class="question-mark">?</span>;
+            <span class="kw">let</span> <span class="ident">input_path</span> <span class="op">=</span> <span class="ident">input_path</span>.<span class="ident">as_path</span>();
+            <span class="kw">let</span> <span class="ident">input_file</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">fd</span>) <span class="op">=</span>
+                <span class="ident">safe_descriptor_from_path</span>(<span class="ident">input_path</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Error::FileError</span>(<span class="ident">e</span>.<span class="ident">into</span>()))<span class="question-mark">?</span>
+            {
+                <span class="ident">fd</span>.<span class="ident">into</span>()
+            } <span class="kw">else</span> {
+                <span class="ident">File::open</span>(<span class="ident">input_path</span>).<span class="ident">map_err</span>(<span class="ident">Error::FileError</span>)<span class="question-mark">?</span>
+            };
             <span class="ident">keep_rds</span>.<span class="ident">push</span>(<span class="ident">input_file</span>.<span class="ident">as_raw_descriptor</span>());
             <span class="prelude-val">Some</span>(<span class="ident">Box::new</span>(<span class="ident">input_file</span>))
         } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">stdin</span> {
@@ -602,11 +629,18 @@
             }
             <span class="ident">SerialType::File</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">path</span> {
                 <span class="prelude-val">Some</span>(<span class="ident">path</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">OpenOptions::new</span>()
-                        .<span class="ident">append</span>(<span class="bool-val">true</span>)
-                        .<span class="ident">create</span>(<span class="bool-val">true</span>)
-                        .<span class="ident">open</span>(<span class="ident">path</span>.<span class="ident">as_path</span>())
-                        .<span class="ident">map_err</span>(<span class="ident">Error::FileError</span>)<span class="question-mark">?</span>;
+                    <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">as_path</span>();
+                    <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">fd</span>) <span class="op">=</span>
+                        <span class="ident">safe_descriptor_from_path</span>(<span class="ident">path</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Error::FileError</span>(<span class="ident">e</span>.<span class="ident">into</span>()))<span class="question-mark">?</span>
+                    {
+                        <span class="ident">fd</span>.<span class="ident">into</span>()
+                    } <span class="kw">else</span> {
+                        <span class="ident">OpenOptions::new</span>()
+                            .<span class="ident">append</span>(<span class="bool-val">true</span>)
+                            .<span class="ident">create</span>(<span class="bool-val">true</span>)
+                            .<span class="ident">open</span>(<span class="ident">path</span>)
+                            .<span class="ident">map_err</span>(<span class="ident">Error::FileError</span>)<span class="question-mark">?</span>
+                    };
                     <span class="ident">keep_rds</span>.<span class="ident">push</span>(<span class="ident">file</span>.<span class="ident">as_raw_descriptor</span>());
                     <span class="prelude-val">Some</span>(<span class="ident">Box::new</span>(<span class="ident">file</span>))
                 }
