@@ -236,6 +236,14 @@ level end-to-end tests. Only if all of those pass, will the change be submitted.
 re-added (CQ+2). Unfortunately, it is extremely common for false negatives to
 cause a change to get rejected, so be ready to re-apply the CQ+2 label if you're
 the owner of a ready to submit change.</p>
+<h2 id="contributing-to-the-documentation"><a class="header" href="#contributing-to-the-documentation">Contributing to the documentation</a></h2>
+<p><a href="https://google.github.io/crosvm/">The book of crosvm</a> is build with <a href="https://rust-lang.github.io/mdBook/">mdBook</a>. Each markdown files must follow
+<a href="https://github.com/google/styleguide/blob/gh-pages/docguide/style.md">Google Markdown style guide</a>.</p>
+<p>To render the book locally, you need to install mdbook and <a href="https://github.com/badboy/mdbook-mermaid">mdbook-mermaid</a>,
+which should be installed when you run <code>./tools/install-deps</code>script.</p>
+<pre><code class="language-bash">cd crosvm/docs/book/
+mdbook serve # then the book will be served at http://localhost:3000
+</code></pre>
 
                     </main>
 
