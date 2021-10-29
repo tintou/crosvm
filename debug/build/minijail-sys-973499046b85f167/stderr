@@ -14,6 +14,3 @@ common.mk:606: warning: ignoring old recipe for target 'libconstants.gen.pic.o'
 common.mk:606: warning: ignoring old recipe for target 'libconstants.gen.o.depends'
 /home/runner/work/crosvm/crosvm/third_party/minijail/Makefile:196: warning: overriding recipe for target 'libconstants.gen.o'
 common.mk:606: warning: ignoring old recipe for target 'libconstants.gen.o'
-error: 'rustfmt' is not installed for the toolchain '1.55.0-x86_64-unknown-linux-gnu'
-To install, run `rustup component add rustfmt --toolchain 1.55.0-x86_64-unknown-linux-gnu`
-Failed to run rustfmt: Internal rustfmt error (non-fatal, continuing)
