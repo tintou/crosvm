@@ -1,0 +1,132 @@
+cargo:rerun-if-env-changed=LIBCAP_NO_PKG_CONFIG
+cargo:rerun-if-env-changed=PKG_CONFIG_x86_64-unknown-linux-gnu
+cargo:rerun-if-env-changed=PKG_CONFIG_x86_64_unknown_linux_gnu
+cargo:rerun-if-env-changed=HOST_PKG_CONFIG
+cargo:rerun-if-env-changed=PKG_CONFIG
+cargo:rerun-if-env-changed=LIBCAP_STATIC
+cargo:rerun-if-env-changed=LIBCAP_DYNAMIC
+cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64-unknown-linux-gnu
+cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64_unknown_linux_gnu
+cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH
+cargo:rerun-if-env-changed=PKG_CONFIG_PATH
+cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64-unknown-linux-gnu
+cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64_unknown_linux_gnu
+cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR
+cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR
+cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64-unknown-linux-gnu
+cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64_unknown_linux_gnu
+cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR
+cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+cargo:rerun-if-env-changed=SYSROOT
+cargo:rerun-if-env-changed=LIBCAP_STATIC
+cargo:rerun-if-env-changed=LIBCAP_DYNAMIC
+cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+cargo:rustc-link-search=native=/usr/lib/x86_64-linux-gnu
+cargo:rustc-link-lib=cap
+cargo:rerun-if-env-changed=PKG_CONFIG_x86_64-unknown-linux-gnu
+cargo:rerun-if-env-changed=PKG_CONFIG_x86_64_unknown_linux_gnu
+cargo:rerun-if-env-changed=HOST_PKG_CONFIG
+cargo:rerun-if-env-changed=PKG_CONFIG
+cargo:rerun-if-env-changed=LIBCAP_STATIC
+cargo:rerun-if-env-changed=LIBCAP_DYNAMIC
+cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64-unknown-linux-gnu
+cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64_unknown_linux_gnu
+cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH
+cargo:rerun-if-env-changed=PKG_CONFIG_PATH
+cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64-unknown-linux-gnu
+cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64_unknown_linux_gnu
+cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR
+cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR
+cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64-unknown-linux-gnu
+cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64_unknown_linux_gnu
+cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR
+cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+cargo:rerun-if-env-changed=LIBMINIJAIL_NO_PKG_CONFIG
+cargo:rerun-if-env-changed=PKG_CONFIG_x86_64-unknown-linux-gnu
+cargo:rerun-if-env-changed=PKG_CONFIG_x86_64_unknown_linux_gnu
+cargo:rerun-if-env-changed=HOST_PKG_CONFIG
+cargo:rerun-if-env-changed=PKG_CONFIG
+cargo:rerun-if-env-changed=LIBMINIJAIL_STATIC
+cargo:rerun-if-env-changed=LIBMINIJAIL_DYNAMIC
+cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64-unknown-linux-gnu
+cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64_unknown_linux_gnu
+cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH
+cargo:rerun-if-env-changed=PKG_CONFIG_PATH
+cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64-unknown-linux-gnu
+cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64_unknown_linux_gnu
+cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR
+cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR
+cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64-unknown-linux-gnu
+cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64_unknown_linux_gnu
+cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR
+cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+make: Entering directory '/home/runner/work/crosvm/crosvm/third_party/minijail'
+Using BASE_VER=0
+cc -Wunused-parameter -Wextra -Wno-missing-field-initializers -DPRELOADPATH='"/lib/libminijailpreload.so"' -DDEFAULT_PIVOT_ROOT='"/var/empty"' -DALLOW_DEBUG_LOGGING -isystem googletest-release-1.11.0/googletest/include  -c -o libminijail.o libminijail.c
+cc -Wunused-parameter -Wextra -Wno-missing-field-initializers -DPRELOADPATH='"/lib/libminijailpreload.so"' -DDEFAULT_PIVOT_ROOT='"/var/empty"' -DALLOW_DEBUG_LOGGING -isystem googletest-release-1.11.0/googletest/include  -c -o syscall_filter.o syscall_filter.c
+cc -Wunused-parameter -Wextra -Wno-missing-field-initializers -DPRELOADPATH='"/lib/libminijailpreload.so"' -DDEFAULT_PIVOT_ROOT='"/var/empty"' -DALLOW_DEBUG_LOGGING -isystem googletest-release-1.11.0/googletest/include  -c -o signal_handler.o signal_handler.c
+cc -Wunused-parameter -Wextra -Wno-missing-field-initializers -DPRELOADPATH='"/lib/libminijailpreload.so"' -DDEFAULT_PIVOT_ROOT='"/var/empty"' -DALLOW_DEBUG_LOGGING -isystem googletest-release-1.11.0/googletest/include  -c -o bpf.o bpf.c
+cc -Wunused-parameter -Wextra -Wno-missing-field-initializers -DPRELOADPATH='"/lib/libminijailpreload.so"' -DDEFAULT_PIVOT_ROOT='"/var/empty"' -DALLOW_DEBUG_LOGGING -isystem googletest-release-1.11.0/googletest/include  -c -o util.o util.c
+cc -Wunused-parameter -Wextra -Wno-missing-field-initializers -DPRELOADPATH='"/lib/libminijailpreload.so"' -DDEFAULT_PIVOT_ROOT='"/var/empty"' -DALLOW_DEBUG_LOGGING -isystem googletest-release-1.11.0/googletest/include  -c -o system.o system.c
+cc -Wunused-parameter -Wextra -Wno-missing-field-initializers -DPRELOADPATH='"/lib/libminijailpreload.so"' -DDEFAULT_PIVOT_ROOT='"/var/empty"' -DALLOW_DEBUG_LOGGING -isystem googletest-release-1.11.0/googletest/include  -c -o syscall_wrapper.o syscall_wrapper.c
+Generating target-arch specific libconstants.gen.c...
+libconstants.gen.c done.
+cc -Wunused-parameter -Wextra -Wno-missing-field-initializers -DPRELOADPATH='"/lib/libminijailpreload.so"' -DDEFAULT_PIVOT_ROOT='"/var/empty"' -DALLOW_DEBUG_LOGGING -isystem googletest-release-1.11.0/googletest/include -I/home/runner/work/crosvm/crosvm/third_party/minijail  -c -o libconstants.gen.o libconstants.gen.c
+Generating target-arch specific libsyscalls.gen.c...
+libsyscalls.gen.c done.
+cc -Wunused-parameter -Wextra -Wno-missing-field-initializers -DPRELOADPATH='"/lib/libminijailpreload.so"' -DDEFAULT_PIVOT_ROOT='"/var/empty"' -DALLOW_DEBUG_LOGGING -isystem googletest-release-1.11.0/googletest/include -I/home/runner/work/crosvm/crosvm/third_party/minijail  -c -o libsyscalls.gen.o libsyscalls.gen.c
+cd "/home/runner/work/crosvm/crosvm/docs/target/debug/build/minijail-sys-7601f533048c404e/out/" && make -r -I "/home/runner/work/crosvm/crosvm/third_party/minijail" -f "/home/runner/work/crosvm/crosvm/third_party/minijail/Makefile" SRC="/home/runner/work/crosvm/crosvm/third_party/minijail" OUT="/home/runner/work/crosvm/crosvm/docs/target/debug/build/minijail-sys-7601f533048c404e/out/" "CC_STATIC_LIBRARY(libminijail.pic.a)"
+make[1]: Entering directory '/home/runner/work/crosvm/crosvm/docs/target/debug/build/minijail-sys-7601f533048c404e/out'
+Using BASE_VER=0
+build configuration:
+- OUT=/home/runner/work/crosvm/crosvm/docs/target/debug/build/minijail-sys-7601f533048c404e/out/
+- SRC=/home/runner/work/crosvm/crosvm/third_party/minijail
+- MODE=debug
+- SPLITDEBUG=0
+- NOSTRIP=1
+- VALGRIND=0
+- COLOR=1
+- CXXEXCEPTIONS=0
+- ARCH=x86_64
+- QEMU_ARCH=x86_64
+- USE_QEMU=0
+- NEEDS_ROOT=0
+- NEEDS_MOUNTS=0
+- SYSROOT=/
+
+CC		libminijail.c ->  libminijail.pic.o
+CC		libminijail.c ->  libminijail.pie.o
+CC		syscall_filter.c ->  syscall_filter.pic.o
+CC		syscall_filter.c ->  syscall_filter.pie.o
+CC		signal_handler.c ->  signal_handler.pic.o
+CC		signal_handler.c ->  signal_handler.pie.o
+CC		bpf.c ->  bpf.pic.o
+CC		bpf.c ->  bpf.pie.o
+CC		util.c ->  util.pic.o
+CC		util.c ->  util.pie.o
+CC		system.c ->  system.pic.o
+CC		system.c ->  system.pie.o
+CC		syscall_wrapper.c ->  syscall_wrapper.pic.o
+CC		syscall_wrapper.c ->  syscall_wrapper.pie.o
+Generating target-arch specific libconstants.gen.c...
+libconstants.gen.c done.
+CC		libconstants.gen.c ->  libconstants.gen.pic.o
+CC		libconstants.gen.c ->  libconstants.gen.pie.o
+Generating target-arch specific libsyscalls.gen.c...
+libsyscalls.gen.c done.
+CC		libsyscalls.gen.c ->  libsyscalls.gen.pic.o
+CC		libsyscalls.gen.c ->  libsyscalls.gen.pie.o
+AR		libminijail.pic.o syscall_filter.pic.o signal_handler.pic.o bpf.pic.o util.pic.o system.pic.o syscall_wrapper.pic.o libconstants.gen.pic.o libsyscalls.gen.pic.o -> libminijail.pic.a
+make[1]: Leaving directory '/home/runner/work/crosvm/crosvm/docs/target/debug/build/minijail-sys-7601f533048c404e/out'
+make: Leaving directory '/home/runner/work/crosvm/crosvm/third_party/minijail'
+cargo:rustc-link-search=native=/home/runner/work/crosvm/crosvm/./docs/target/debug/build/minijail-sys-7601f533048c404e/out
+cargo:rustc-link-lib=static=minijail.pic
+cargo:rerun-if-changed=../../libminijail.h
