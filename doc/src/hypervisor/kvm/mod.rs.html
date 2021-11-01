@@ -1622,7 +1622,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">kvm</span>: <span class="kw-2">&amp;</span><span class="ident">Kvm</span>, <span class="ident">guest_mem</span>: <span class="ident">GuestMemory</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">KvmVm</span><span class="op">&gt;</span> {
         <span class="comment">// Safe because we know kvm is a real kvm fd as this module is the only one that can make</span>
         <span class="comment">// Kvm objects.</span>
-        <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">ioctl_with_val</span>(<span class="ident">kvm</span>, <span class="ident">KVM_CREATE_VM</span>(), <span class="number">0</span>) };
+        <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">ioctl_with_val</span>(<span class="ident">kvm</span>, <span class="ident">KVM_CREATE_VM</span>(), <span class="ident">kvm</span>.<span class="ident">get_vm_type</span>()) };
         <span class="kw">if</span> <span class="ident">ret</span> <span class="op">&lt;</span> <span class="number">0</span> {
             <span class="kw">return</span> <span class="ident">errno_result</span>();
         }
