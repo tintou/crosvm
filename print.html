@@ -915,8 +915,15 @@ the owner of a ready to submit change.</p>
 <p>To render the book locally, you need to install mdbook and <a href="https://github.com/badboy/mdbook-mermaid">mdbook-mermaid</a>,
 which should be installed when you run <code>./tools/install-deps</code>script.</p>
 <pre><code class="language-bash">cd crosvm/docs/book/
-mdbook serve # then the book will be served at http://localhost:3000
+mdbook build
 </code></pre>
+<blockquote>
+<p>Note: If you make a certain size of changes, it's recommended to reinstall
+mdbook manually with <code>cargo install mdbook</code>, as <code>./tools/install-deps</code> only
+installs a binary with some convenient features disabled. For example, the
+full version of mdbook allows you to edit files while checking rendered
+results.</p>
+</blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="onboarding-resources"><a class="header" href="#onboarding-resources">Onboarding Resources</a></h1>
 <p>Various links to useful resources for learning about virtual machines and the
 technology behind crosvm.</p>
