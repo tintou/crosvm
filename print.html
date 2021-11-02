@@ -161,6 +161,10 @@ hypervisor.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="building-crosvm"><a class="header" href="#building-crosvm">Building Crosvm</a></h1>
 <p>This chapter includes how to set up crosvm on each platform.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="building-for-linux"><a class="header" href="#building-for-linux">Building for Linux</a></h1>
+<h2 id="checking-out"><a class="header" href="#checking-out">Checking out</a></h2>
+<p>Obtain the source code via git clone.</p>
+<pre><code>git clone https://chromium.googlesource.com/chromiumos/platform/crosvm
+</code></pre>
 <h2 id="setting-up-the-development-environment"><a class="header" href="#setting-up-the-development-environment">Setting up the development environment</a></h2>
 <p>Crosvm uses submodules to manage external dependencies. Initialize them via:</p>
 <pre><code class="language-sh">git submodule update --init
@@ -171,8 +175,9 @@ conflict with <code>repo</code>):</p>
 <pre><code class="language-sh">git config --global submodule.recurse true
 git config push.recurseSubmodules no
 </code></pre>
-<p>Crosvm development best works on Debian derivatives. We provide a script to
-install the necessary packages on Debian:</p>
+<p>Crosvm development best works on Debian derivatives. First install rust via
+https://rustup.rs/. Then for the rest, we provide a script to install the
+necessary packages on Debian:</p>
 <pre><code>$ ./tools/install-deps
 </code></pre>
 <p>For other systems, please see below for instructions on
