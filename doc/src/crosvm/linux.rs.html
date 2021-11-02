@@ -4407,7 +4407,7 @@
 
     <span class="kw">let</span> <span class="ident">mapping_address</span> <span class="op">=</span> <span class="ident">resources</span>
         .<span class="ident">mmio_allocator</span>(<span class="ident">MmioType::High</span>)
-        .<span class="ident">allocate_with_align</span>(
+        .<span class="ident">reverse_allocate_with_align</span>(
             <span class="ident">arena_size</span>,
             <span class="ident">Alloc::PmemDevice</span>(<span class="ident">index</span>),
             <span class="macro">format!</span>(<span class="string">&quot;pmem_disk_image_{}&quot;</span>, <span class="ident">index</span>),

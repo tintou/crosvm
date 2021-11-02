@@ -1,0 +1,15 @@
+/home/runner/work/crosvm/crosvm/./docs/target/debug/build/tpm2-sys-da94245569af0285/out/PPPlat.o: \
+ PPPlat.c PlatformData.h TpmBuildSwitches.h Implementation.h BaseTypes.h \
+ TPMB.h bool.h
+
+PlatformData.h:
+
+TpmBuildSwitches.h:
+
+Implementation.h:
+
+BaseTypes.h:
+
+TPMB.h:
+
+bool.h:
