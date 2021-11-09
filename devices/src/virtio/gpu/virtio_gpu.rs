@@ -20,6 +20,7 @@ use rutabaga_gfx::{
     ResourceCreate3D, ResourceCreateBlob, Rutabaga, RutabagaBuilder, RutabagaFence,
     RutabagaFenceHandler, RutabagaIovec, Transfer3D,
 };
+use rutabaga_gfx::{RUTABAGA_MEM_HANDLE_TYPE_OPAQUE_FD, RUTABAGA_MEM_HANDLE_TYPE_DMABUF};
 
 use libc::c_void;
 
@@ -703,12 +704,35 @@ impl VirtioGpu {
                     offset,
                     size: resource.size,
                 },
-                None => VmMemoryRequest::RegisterFdAtPciBarOffset(
-                    self.pci_bar,
-                    export.os_handle,
-                    resource.size as usize,
-                    offset,
-                ),
+                None => {
+                    match export.handle_type {
+                        RUTABAGA_MEM_HANDLE_TYPE_OPAQUE_FD => {
+                            if self.external_blob {
+                                return Err(ErrUnspec);
+                            }
+
+                            let mapping = self.rutabaga.map(resource_id)?;
+                            // Scope for lock
+                            {
+                                let mut map_req = self.map_request.lock();
+                                if map_req.is_some() {
+                                    return Err(ErrUnspec);
+                                }
+                                *map_req = Some(mapping);
+                            }
+                            VmMemoryRequest::RegisterHostPointerAtPciBarOffset(self.pci_bar, offset)
+                        },
+                        RUTABAGA_MEM_HANDLE_TYPE_DMABUF => {
+                            VmMemoryRequest::RegisterFdAtPciBarOffset(
+                                self.pci_bar,
+                                export.os_handle,
+                                resource.size as usize,
+                                offset,
+                            )
+                        },
+                        _ => {return Err(ErrUnspec)}
+                    }
+                },
             },
             Err(_) => {
                 if self.external_blob {
